@@ -9,17 +9,24 @@ class TargetCanvas(Canvas):
         
         #Variables
         self.parent = parent
-        self.targetX1 = 250
-        self.targetY1 = 250
+        self.score = 0
 
         #Get mouse position
         self.bind_all("<Motion>", self.getMousePos)
         self.bind_all("<Button-1>", self.click)
-        self.parent.after(800, self.genTarget)
 
     """ Gen target """
     def genTarget(self) -> None:
-        self.target = self.create_rectangle(self.targetX1, self.targetY1, self.targetX1 + 50, self.targetY1 + 50, fill="red")
+        self.targetX1 = random.randint(100, 540)
+        self.targetY1 = random.randint(50, 350)
+
+        self.target = self.create_rectangle(self.targetX1, self.targetY1, self.targetX1 + 50, self.targetY1 + 50, fill="red", tags="target")
+
+        self.parent.after(800, self.genTarget)
+
+    """ Del target """
+    def delTarget(self) -> None:
+        self.parent.after(800, self.delete(self.target))
 
     """ Mouse functions """
     #Get mouse x and y
@@ -29,11 +36,11 @@ class TargetCanvas(Canvas):
 
     #Left click function
     def click(self, event) -> None:
-        print(self.mouseX, self.mouseY)
-
         if self.checkHit() == True:
+            self.score += 1
             print("Hit")
         else:
+            self.score -= 2
             print("Miss")
 
     """ Check for hit """
@@ -53,5 +60,8 @@ if __name__ == "__main__":
     
     """ Init target canvas """
     canvas = TargetCanvas(root)
+    canvas.genTarget()
+    canvas.delTarget()
+
     """ Mainloop """
     root.mainloop()
