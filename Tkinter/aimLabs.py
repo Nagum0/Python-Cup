@@ -10,6 +10,7 @@ class TargetCanvas(Canvas):
         #Variables
         self.parent = parent
         self.score = 0
+        self.targetCounter = 0
 
         #Get mouse position
         self.bind_all("<Motion>", self.getMousePos)
@@ -20,13 +21,21 @@ class TargetCanvas(Canvas):
         self.targetX1 = random.randint(100, 540)
         self.targetY1 = random.randint(50, 350)
 
-        self.target = self.create_rectangle(self.targetX1, self.targetY1, self.targetX1 + 50, self.targetY1 + 50, fill="red", tags="target")
+        self.targetCounter += 1
+        self.targetTag = f"target{self.targetCounter}"
+
+        self.target = self.create_rectangle(self.targetX1, self.targetY1, self.targetX1 + 50, self.targetY1 + 50, fill="red", tags=self.targetTag)
+
+        if self.checkScore():
+            print(f"Score: {self.score}")
+            quit()
 
         self.parent.after(800, self.genTarget)
 
     """ Del target """
     def delTarget(self) -> None:
-        self.parent.after(800, self.delete(self.target))
+        self.delete(f"target{self.targetCounter - 1}")
+        self.parent.after(800, self.delTarget)
 
     """ Mouse functions """
     #Get mouse x and y
@@ -36,6 +45,8 @@ class TargetCanvas(Canvas):
 
     #Left click function
     def click(self, event) -> None:
+        print(f"Score: {self.score}")
+
         if self.checkHit() == True:
             self.score += 1
             print("Hit")
@@ -46,6 +57,13 @@ class TargetCanvas(Canvas):
     """ Check for hit """
     def checkHit(self) -> bool:
         if self.mouseX > self.targetX1 and self.mouseX < self.targetX1+50 and self.mouseY > self.targetY1 and self.mouseY < self.targetY1+50:
+            return True
+        else:
+            return False
+        
+    """ Check kill """
+    def checkScore(self) -> bool:
+        if self.score >= 50:
             return True
         else:
             return False
